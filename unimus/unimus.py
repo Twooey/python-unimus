@@ -1,10 +1,8 @@
 import urllib3
 import json
 import base64
-import datetime
 
-
-class unimus:
+class Unimus:
 
     def __init__(self, url, header):
         self.url = url + '/api/v2'

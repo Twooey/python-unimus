@@ -1,0 +1,6 @@
+requests
+socket
+exceptions
+urllib3
+json
+base64
