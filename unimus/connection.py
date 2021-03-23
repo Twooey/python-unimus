@@ -1,21 +1,21 @@
 import requests
 import socket
-import exceptions
+from unimus import exceptions
 import certifi
 
 
 class UnimusConnection(object):
 
-    def __init__(self, ssl_verify=True, use_ssl=True, host=None, auth_token=None,
+    def __init__(self, ssl_verify=True, use_ssl=True, host=None, auth_token=None, auth=None,
                  port=None):
         self.use_ssl = use_ssl
         self.host = host
         self.auth_token = auth_token
         self.port = port
-
         self.base_url = 'http{s}://{host}{p}{prefix}'.format(s='s' if use_ssl else '',
                                                              p=':{}'.format(self.port) if self.port else '',
                                                              host=self.host, prefix='/api/v2')
+        self.auth = auth
         self.session = requests.Session()
         self.session.verify = ssl_verify
         self.session.headers.update()
@@ -93,11 +93,11 @@ class UnimusConnection(object):
 
         return self.__request('PUT', params)
 
-    def patch(self, params, key, **kwargs):
+    def patch(self, params, key=None, **kwargs):
 
         body_data = {key: value for (key, value) in kwargs.items()}
         resp_ok, resp_status, resp_data = self.__request('PATCH', params=params, key=key, body=body_data)
-        if resp_ok and resp_status == 200:
+        if resp_ok and resp_status == 202:
             return resp_data
         else:
             raise exceptions.UpdateException(resp_data)
@@ -119,7 +119,7 @@ class UnimusConnection(object):
 
         del_str = '{}{}'.format(params, del_id)
         resp_ok, resp_status, resp_data = self.__request('DELETE', del_str)
-        if resp_ok and resp_status == 204:
+        if resp_ok and resp_status == 201:
             return True
         else:
             raise exceptions.DeleteException(resp_data)
